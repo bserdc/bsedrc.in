@@ -44,7 +44,7 @@ export const FeePaymentView: React.FC<FeePaymentViewProps> = ({
   const getFeeAmount = (purpose: FeePayment['purpose']): number => {
     switch (purpose) {
       case 'Registration Fee':
-        return 650;
+        return 25;
       case 'Annual Board Exam Fee':
         return 1250;
       case 'Migration Certificate':
@@ -106,7 +106,7 @@ export const FeePaymentView: React.FC<FeePaymentViewProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 space-y-6">
-      
+
       {/* Header */}
       <div className="bg-white p-6 rounded-2xl shadow-xs border border-slate-200">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -154,7 +154,7 @@ export const FeePaymentView: React.FC<FeePaymentViewProps> = ({
       {/* TAB 1: Pay Fee Form */}
       {activeSubTab === 'pay' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
+
           {/* Left: Payment Form */}
           <div className="lg:col-span-8 bg-white p-6 sm:p-8 rounded-2xl shadow-xs border border-slate-200 space-y-6">
             <div className="border-b border-slate-200 pb-4">
@@ -167,7 +167,7 @@ export const FeePaymentView: React.FC<FeePaymentViewProps> = ({
             </div>
 
             <form onSubmit={handleInitiatePayment} className="space-y-4 text-xs">
-              
+
               {/* Fee Head */}
               <div>
                 <label className="font-semibold text-slate-700 block mb-1">Select Purpose / Fee Head *</label>
@@ -177,7 +177,7 @@ export const FeePaymentView: React.FC<FeePaymentViewProps> = ({
                   className="w-full bg-slate-50 p-2.5 rounded-xl border border-slate-300 font-semibold focus:ring-2 focus:ring-blue-900"
                 >
                   <option value="Annual Board Exam Fee">Annual Board Exam Fee (₹1,250.00)</option>
-                  <option value="Registration Fee">Student Registration Fee (₹650.00)</option>
+                  <option value="Registration Fee">Student Registration Fee (₹25.00)</option>
                   <option value="Migration Certificate">Migration Certificate Fee (₹400.00)</option>
                   <option value="Duplicate Marksheet">Duplicate Marksheet Hardcopy (₹350.00)</option>
                   <option value="Re-evaluation Fee">Marks Re-evaluation / Scrutiny (₹500.00)</option>
@@ -292,7 +292,7 @@ export const FeePaymentView: React.FC<FeePaymentViewProps> = ({
               <div className="space-y-2 text-slate-600">
                 <div className="flex justify-between py-1 border-b border-slate-50">
                   <span>Registration (Class 10th/12th):</span>
-                  <span className="font-mono font-bold text-slate-900">₹650</span>
+                  <span className="font-mono font-bold text-slate-900">₹25</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-slate-50">
                   <span>Annual Board Examination:</span>

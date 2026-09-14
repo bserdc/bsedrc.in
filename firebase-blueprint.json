@@ -1,0 +1,161 @@
+{
+  "entities": {
+    "students": {
+      "title": "Students",
+      "description": "Registered students enrolled in Classes 6th-10th with auto-card details",
+      "type": "object",
+      "properties": {
+        "regNo": { "type": "string" },
+        "rollNo": { "type": "string" },
+        "name": { "type": "string" },
+        "fatherName": { "type": "string" },
+        "course": { "type": "string" },
+        "status": { "type": "string" },
+        "feeStatus": { "type": "string" }
+      },
+      "required": ["regNo", "name", "course"]
+    },
+    "results": {
+      "title": "Exam Results",
+      "description": "Board examination and term results for students",
+      "type": "object",
+      "properties": {
+        "studentRegNo": { "type": "string" },
+        "rollNo": { "type": "string" },
+        "candidateName": { "type": "string" },
+        "course": { "type": "string" },
+        "totalObt": { "type": "number" },
+        "division": { "type": "string" },
+        "resultStatus": { "type": "string" },
+        "isPublished": { "type": "boolean" }
+      },
+      "required": ["rollNo", "candidateName", "course"]
+    },
+    "gallery": {
+      "title": "Photo Gallery",
+      "description": "Council photo gallery images and captions",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "titleHindi": { "type": "string" },
+        "category": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "date": { "type": "string" },
+        "caption": { "type": "string" }
+      },
+      "required": ["title", "imageUrl", "category"]
+    },
+    "notifications": {
+      "title": "Board Notifications",
+      "description": "Official notices, circulars, and marquee ticker items",
+      "type": "object",
+      "properties": {
+        "noticeNo": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "date": { "type": "string" },
+        "isMarquee": { "type": "boolean" },
+        "priority": { "type": "string" }
+      },
+      "required": ["noticeNo", "title", "date"]
+    },
+    "customForms": {
+      "title": "Custom Forms",
+      "description": "Dynamic forms published by the administration",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "isPublished": { "type": "boolean" },
+        "feeAmount": { "type": "number" }
+      },
+      "required": ["title", "category"]
+    },
+    "formSubmissions": {
+      "title": "Form Submissions",
+      "description": "Submissions filled by candidates and applicants",
+      "type": "object",
+      "properties": {
+        "formId": { "type": "string" },
+        "formTitle": { "type": "string" },
+        "applicantName": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["formId", "applicantName"]
+    },
+    "payments": {
+      "title": "Payments & Fee Receipts",
+      "description": "Transactions and payment receipts for examinations, admissions, and certificates",
+      "type": "object",
+      "properties": {
+        "transactionId": { "type": "string" },
+        "receiptNo": { "type": "string" },
+        "amount": { "type": "number" },
+        "candidateName": { "type": "string" },
+        "serviceType": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["transactionId", "amount", "candidateName"]
+    },
+    "certificates": {
+      "title": "Certificates",
+      "description": "Issued council academic and character certificates with verification serials",
+      "type": "object",
+      "properties": {
+        "certificateNo": { "type": "string" },
+        "studentRegNo": { "type": "string" },
+        "studentName": { "type": "string" },
+        "course": { "type": "string" },
+        "issueDate": { "type": "string" }
+      },
+      "required": ["certificateNo", "studentName", "course"]
+    },
+    "users": {
+      "title": "Users",
+      "description": "Registered candidate and staff user accounts",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string" }
+      },
+      "required": ["uid", "name"]
+    },
+    "admins": {
+      "title": "Authorized Administrators",
+      "description": "Registry of authorized admin users by UID or Email",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string" },
+        "authorizedAt": { "type": "string" }
+      },
+      "required": ["email"]
+    },
+    "adminConfig": {
+      "title": "Admin Configuration",
+      "description": "Secure administrative portal configuration credentials",
+      "type": "object",
+      "properties": {
+        "username": { "type": "string" },
+        "email": { "type": "string" },
+        "securityPin": { "type": "string" }
+      },
+      "required": ["email", "securityPin"]
+    }
+  },
+  "firestore": {
+    "students": { "schema": "students" },
+    "results": { "schema": "results" },
+    "gallery": { "schema": "gallery" },
+    "notifications": { "schema": "notifications" },
+    "custom_forms": { "schema": "customForms" },
+    "form_submissions": { "schema": "formSubmissions" },
+    "payments": { "schema": "payments" },
+    "certificates": { "schema": "certificates" },
+    "users": { "schema": "users" },
+    "admins": { "schema": "admins" },
+    "admin_config": { "schema": "adminConfig" }
+  }
+}

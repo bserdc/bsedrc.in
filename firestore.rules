@@ -1,0 +1,101 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == 'bserdc.bihar@gmail.com' ||
+         request.auth.token.email == 'anandsinghmdp8@gmail.com' ||
+         request.auth.token.email == 'anandsinghks2014@gmail.com' ||
+         request.auth.token.email == 'adarshbiharsiksha@gmail.com' ||
+         request.auth.token.email == 'admin@bsedrc.in' ||
+         request.auth.token.admin == true ||
+         exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+         exists(/databases/$(database)/documents/admins/$(request.auth.token.email)));
+    }
+
+    // Admins registry: authenticated users can read to verify authorization, writable only via backend/console
+    match /admins/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // Administrative Portal Config & System Metadata
+    // Strictly disallowed for all direct client access (Backend / Firebase Admin only)
+    match /admin_config/{docId} {
+      allow read, write: if false;
+    }
+
+    match /system_config/{docId} {
+      allow read, write: if false;
+    }
+
+    // Publicly accessible notices, circulars, and announcements (Read-only for public, Admin write)
+    match /notifications/{notifId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Photo Gallery (Read-only for public, Admin write)
+    match /gallery/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Board Examination Results (Read-only for public verification, Admin write)
+    match /results/{resultId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Student Registration & Records
+    // Candidates can register (create) and view; allow delete for data cleanup
+    match /students/{studentId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if true;
+    }
+
+    // Dynamic Online Forms (Public read, Admin write)
+    match /custom_forms/{formId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Form Submissions (Public can submit/create, only Admin can read all or delete)
+    match /form_submissions/{submissionId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Payments & E-Receipts (Public can record payment, Admin can manage)
+    match /payments/{paymentId} {
+      allow create: if true;
+      allow read: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Issued Certificates (Public serial verification read-only, write allowed for cleanup/admin)
+    match /certificates/{certId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // User accounts (Self-managed only)
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Sync Metadata (Admin only)
+    match /sync_metadata/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
+
+

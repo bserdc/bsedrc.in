@@ -802,7 +802,7 @@ export default function App() {
         return s;
       })
     );
-    setPaymentModalState((prev) => ({ ...prev, isOpen: false }));
+    // Note: Modal displays the generated receipt with print/download and closes via onClose
   };
 
   // Language and Filter State

@@ -60,10 +60,10 @@ class PaymentService {
   public async createOrder(params: CreateOrderParams): Promise<PaymentOrderResult> {
     const { amount, serviceType, candidateName, regNumber, email, phone } = params;
 
-    // Strict amount validation: Positive integer between 50 INR and 25000 INR
+    // Strict amount validation: Positive integer between 1 INR and 100,000 INR
     const rawNum = Number(amount);
-    if (isNaN(rawNum) || rawNum < 50 || rawNum > 25000) {
-      throw new Error('Invalid payment amount. Fee amount must be between ₹50 and ₹25,000.');
+    if (isNaN(rawNum) || rawNum < 1 || rawNum > 100000) {
+      throw new Error('Invalid payment amount. Fee amount must be between ₹1 and ₹1,00,000.');
     }
     const payableAmount = Math.round(rawNum);
     let razorpayOrderId: string | null = null;

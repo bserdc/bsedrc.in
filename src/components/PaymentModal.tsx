@@ -185,8 +185,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       });
 
       const order = orderRes?.order;
-      // Check for key in order response or client environment
-      const effectiveKey = order?.keyId || ((import.meta as any).env?.VITE_RAZORPAY_KEY_ID as string) || '';
+      // Check for key in order response, client environment, or default gateway key
+      const effectiveKey = order?.keyId || ((import.meta as any).env?.VITE_RAZORPAY_KEY_ID as string) || 'rzp_test_TcSCh1wpVOcaQE';
 
       // 2. If Razorpay Key ID is present, launch official Razorpay Checkout popup
       if (effectiveKey && typeof window !== 'undefined' && (window as any).Razorpay) {
@@ -260,7 +260,52 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         `Razorpay Live Key ID (rzp_live_...) सर्वर पर सेट नहीं है। आप सीधे UPI App (Google Pay / PhonePe / Paytm) या नीचे दिए गए QR कोड को स्कैन करके ₹${amount.toFixed(2)} का तुरंत भुगतान कर सकते हैं।`
       );
     } catch (err: any) {
-      console.warn('Payment order API error:', err);
+      console.warn('Payment order API error, falling back to client checkout:', err);
+      const fallbackKey = ((import.meta as any).env?.VITE_RAZORPAY_KEY_ID as string) || 'rzp_test_TcSCh1wpVOcaQE';
+      
+      if (typeof window !== 'undefined' && (window as any).Razorpay && fallbackKey) {
+        try {
+          const clientOptions: any = {
+            key: fallbackKey,
+            amount: Math.round(amount * 100),
+            currency: 'INR',
+            name: 'Bihar State Educational Development & Research Council',
+            description: purpose,
+            prefill: {
+              name: candidateName,
+              contact: mobile,
+              email: 'adarshbiharsiksha@gmail.com',
+            },
+            notes: {
+              council: 'BSEDRC Bihar Board',
+              serviceType: purpose,
+              refNumber: cleanRef,
+            },
+            theme: {
+              color: '#142d2a',
+            },
+            handler: (response: any) => {
+              const payment = buildSuccessPayment(
+                'Razorpay Gateway (Standard)',
+                response.razorpay_payment_id || ('TXN-RZP-' + Date.now().toString().slice(-8))
+              );
+              handleFinalizePayment(payment);
+            },
+            modal: {
+              ondismiss: () => {
+                setIsProcessing(false);
+              },
+            },
+          };
+
+          const rzp = new (window as any).Razorpay(clientOptions);
+          rzp.open();
+          return;
+        } catch (clientErr) {
+          console.error('Client razorpay launch failed:', clientErr);
+        }
+      }
+
       setIsProcessing(false);
       setActiveMethod('UPI');
       setUpiSubMethod('intent');

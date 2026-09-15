@@ -201,8 +201,23 @@ class ApiClient {
   }
 
   // ==========================================
-  // PAYMENTS
+  // PAYMENTS & RAZORPAY GATEWAY
   // ==========================================
+  public async getPaymentGatewayStatus() {
+    return this.request<{
+      success: boolean;
+      gateway: string;
+      provider: string;
+      apiEndpoint: string;
+      isConfigured: boolean;
+      hasKeyId: boolean;
+      keyId: string;
+      currency: string;
+      supportedModes: string[];
+      compliance: string;
+    }>('/payments/gateway-status');
+  }
+
   public async createPaymentOrder(payload: {
     amount: number;
     serviceType: string;
@@ -317,3 +332,4 @@ class ApiClient {
 }
 
 export const api = new ApiClient();
+export const apiService = api;

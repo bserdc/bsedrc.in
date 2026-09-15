@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { paymentService } from '../services/paymentService';
 import { dataStore } from '../services/dataStore';
+import { config } from '../config';
 
 export class PaymentController {
   /**
@@ -123,6 +124,31 @@ export class PaymentController {
     res.json({
       success: true,
       receipt: payment
+    });
+  }
+
+  /**
+   * GET /api/payments/gateway-status
+   * Provides current status of Razorpay Payment Gateway integration
+   */
+  public async getGatewayStatus(req: Request, res: Response): Promise<void> {
+    res.json({
+      success: true,
+      gateway: 'Razorpay Payment Gateway',
+      provider: 'Razorpay Software Private Limited',
+      apiEndpoint: 'https://api.razorpay.com/v1/orders',
+      isConfigured: config.razorpay.isRealGateway,
+      hasKeyId: !!config.razorpay.keyId,
+      keyId: config.razorpay.keyId,
+      currency: config.razorpay.currency || 'INR',
+      supportedModes: [
+        'UPI (Google Pay, PhonePe, Paytm, BHIM)',
+        'UPI Dynamic QR Code',
+        'Debit / Credit Cards (RuPay, Visa, MasterCard)',
+        'Net Banking (100+ Indian Banks)',
+        'Digital Wallets & Pay Later'
+      ],
+      compliance: 'RBI Payment Aggregator Framework & PCI-DSS Level 1'
     });
   }
 }

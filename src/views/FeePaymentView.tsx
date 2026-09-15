@@ -316,6 +316,44 @@ export const FeePaymentView: React.FC<FeePaymentViewProps> = ({
                 <strong>e-Challan Note:</strong> Keep the generated transaction reference number for all future communications and admit card issuance.
               </div>
             </div>
+
+            {/* Official Razorpay Gateway status card */}
+            <div className="bg-white p-5 rounded-2xl shadow-xs border border-slate-200 space-y-3 text-xs">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded bg-blue-600 text-white font-black text-[11px] flex items-center justify-center shadow-xs">
+                    R
+                  </div>
+                  <div>
+                    <span className="font-bold text-slate-900 block text-xs">Razorpay Gateway API</span>
+                    <span className="text-[10px] text-slate-400 font-mono">v1 /orders integration</span>
+                  </div>
+                </div>
+                <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  Active
+                </span>
+              </div>
+
+              <p className="text-[11px] text-slate-600 leading-relaxed">
+                Official payment aggregator integration with Razorpay. Transactions are cryptographically verified with HMAC SHA-256 signatures.
+              </p>
+
+              <div className="grid grid-cols-2 gap-1.5 text-[10px] text-slate-600 font-semibold">
+                <span className="bg-slate-50 p-1.5 rounded-md border border-slate-200/80 text-center">
+                  UPI &amp; Dynamic QR
+                </span>
+                <span className="bg-slate-50 p-1.5 rounded-md border border-slate-200/80 text-center">
+                  RuPay / Visa / Master
+                </span>
+                <span className="bg-slate-50 p-1.5 rounded-md border border-slate-200/80 text-center">
+                  100+ Indian Banks
+                </span>
+                <span className="bg-slate-50 p-1.5 rounded-md border border-slate-200/80 text-center">
+                  Instant e-Challan Slip
+                </span>
+              </div>
+            </div>
           </div>
 
         </div>

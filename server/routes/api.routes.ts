@@ -88,9 +88,10 @@ apiRouter.post('/results/clear-all', (req, res) => resultController.clearAllResu
 apiRouter.delete('/results', (req, res) => resultController.clearAllResults(req, res));
 
 // ==========================================
-// 5. PAYMENTS & TREASURY
+// 5. PAYMENTS & TREASURY (RAZORPAY INTEGRATION)
 // ==========================================
 
+apiRouter.get('/payments/gateway-status', (req, res) => paymentController.getGatewayStatus(req, res));
 apiRouter.post('/payments/create-order', paymentRateLimiter, (req, res) => paymentController.createOrder(req, res));
 apiRouter.post('/payments/verify', paymentRateLimiter, (req, res) => paymentController.verifyPayment(req, res));
 apiRouter.get('/payments', requireAdminAuth, (req, res) => paymentController.getPayments(req, res));

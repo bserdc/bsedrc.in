@@ -79,7 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'gallery', label: lang === 'EN' ? 'Photo Gallery' : 'फोटो गैलरी', icon: ImageIcon, badge: 'New' },
     { id: 'results', label: lang === 'EN' ? 'Results 2025' : 'परीक्षा परिणाम', icon: FileCheck, badge: 'Active' },
     { id: 'jobs', label: lang === 'EN' ? 'Recruitment Cell' : 'रोजगार भर्ती', icon: Briefcase },
-    { id: 'fees', label: lang === 'EN' ? 'Online Fee' : 'शुल्क भुगतान', icon: CreditCard },
+    { id: 'payment', label: lang === 'EN' ? 'Online Fee' : 'शुल्क भुगतान', icon: CreditCard },
     { id: 'certificates', label: lang === 'EN' ? 'Certificates' : 'प्रमाण पत्र', icon: Award },
     { id: 'notifications', label: lang === 'EN' ? 'Circulars' : 'सूचनाएँ', icon: Bell },
   ];
@@ -94,7 +94,7 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'regcard', label: lang === 'EN' ? 'Registration Card' : 'पंजीकरण कार्ड', targetTab: 'student' },
     { id: 'jobs', label: lang === 'EN' ? 'Job Vacancies' : 'रिक्त पद भर्ती', targetTab: 'jobs' },
     { id: 'verification', label: lang === 'EN' ? 'Certificate Verification' : 'सत्यापन', targetTab: 'certificates' },
-    { id: 'fees', label: lang === 'EN' ? 'Pay Fee & Challan' : 'ई-चालान', targetTab: 'fees' },
+    { id: 'fees', label: lang === 'EN' ? 'Pay Fee & Challan' : 'ई-चालान', targetTab: 'payment' },
   ];
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -161,6 +161,28 @@ export const Header: React.FC<HeaderProps> = ({
               <Mail className="w-3 h-3 text-amber-400" />
               <span>adarshbiharsiksha@gmail.com</span>
             </a>
+
+            {/* Admin Desk / Login in Utility Bar */}
+            {isAdminLoggedIn ? (
+              <button
+                type="button"
+                onClick={() => setCurrentTab('admin')}
+                className="flex items-center gap-1 bg-emerald-700 hover:bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold transition-colors cursor-pointer"
+              >
+                <ShieldCheck className="w-3 h-3 text-amber-300" />
+                <span>{lang === 'EN' ? 'Admin Panel' : 'प्रशासन कक्ष'}</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsAdminModalOpen(true)}
+                className="flex items-center gap-1 text-slate-300 hover:text-amber-400 text-[10px] font-semibold transition-colors cursor-pointer"
+                title="Officer Login"
+              >
+                <Lock className="w-3 h-3 text-amber-400" />
+                <span>{lang === 'EN' ? 'Admin Login' : 'अधिकारी लॉगिन'}</span>
+              </button>
+            )}
 
             {/* Language Switch */}
             <div className="flex items-center bg-[#0d211e] rounded p-0.5 border border-[#1b3d39]">
@@ -242,25 +264,26 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* 3. PRIMARY NAVIGATION BAR (Desktop & Mobile Drawer) */}
-      <nav className="bg-[#142d2a] text-white px-3 sm:px-6 hidden lg:block border-b border-[#1b3d39]">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-1 py-1">
+      {/* 3. PRIMARY NAVIGATION BAR (Always visible across all devices: Mobile, Tablet & Desktop) */}
+      <nav className="w-full bg-[#142d2a] text-white border-b border-[#1b3d39] shadow-xs">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 flex items-center justify-between gap-2">
+          {/* Touch-friendly scrollable tabs on Mobile/Tablet, Full Spread on Desktop */}
+          <div className="flex items-center space-x-1 py-1.5 overflow-x-auto no-scrollbar w-full lg:w-auto">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = currentTab === item.id;
+              const isActive = currentTab === item.id || (item.id === 'payment' && (currentTab === 'payment' || currentTab === 'fees'));
               return (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => setCurrentTab(item.id)}
-                  className={`flex items-center gap-2 px-3.5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all relative ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded text-[11px] sm:text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap shrink-0 relative cursor-pointer ${
                     isActive
                       ? 'bg-amber-500 text-slate-950 font-bold shadow-xs'
                       : 'text-slate-200 hover:bg-[#1f423d] hover:text-amber-300'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-slate-950' : 'text-amber-400'}`} />
+                  <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-slate-950' : 'text-amber-400'}`} />
                   <span>{item.label}</span>
                   {item.badge && (
                     <span
@@ -274,20 +297,49 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
               );
             })}
+
+            {/* Direct Admin Desk Tab in Navigation Bar */}
+            {isAdminLoggedIn ? (
+              <button
+                type="button"
+                onClick={() => setCurrentTab('admin')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded text-[11px] sm:text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap shrink-0 relative cursor-pointer ${
+                  currentTab === 'admin'
+                    ? 'bg-emerald-400 text-slate-950 font-bold shadow-xs'
+                    : 'text-emerald-300 hover:bg-[#1f423d] hover:text-emerald-200 border border-emerald-500/40'
+                }`}
+              >
+                <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                <span>{lang === 'EN' ? 'Admin Desk' : 'प्रशासन'}</span>
+                <span className="text-[9px] bg-emerald-700 text-white px-1.5 py-0.2 rounded-full font-bold">
+                  Active
+                </span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsAdminModalOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-amber-300 hover:bg-[#1f423d] transition-all whitespace-nowrap shrink-0 cursor-pointer"
+                title="Officer / Admin Login"
+              >
+                <Lock className="w-3.5 h-3.5 text-amber-400/80" />
+                <span>{lang === 'EN' ? 'Admin' : 'एडमिन'}</span>
+              </button>
+            )}
           </div>
 
-          {/* Quick Registration / Roll Number Search Form */}
-          <form onSubmit={handleSearchSubmit} className="flex items-center relative py-1">
+          {/* Quick Registration / Roll Number Search Form (Desktop) */}
+          <form onSubmit={handleSearchSubmit} className="hidden lg:flex items-center relative py-1 shrink-0 ml-3">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search Reg No / Roll No..."
-              className="bg-[#0f2421] text-xs text-white placeholder-slate-400 rounded-l px-3 py-1.5 w-48 focus:w-60 transition-all border border-[#234d47] focus:outline-none focus:border-amber-400"
+              className="bg-[#0f2421] text-xs text-white placeholder-slate-400 rounded-l px-3 py-1.5 w-44 xl:w-56 focus:w-60 transition-all border border-[#234d47] focus:outline-none focus:border-amber-400"
             />
             <button
               type="submit"
-              className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1.5 rounded-r font-semibold text-xs transition-colors"
+              className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1.5 rounded-r font-semibold text-xs transition-colors cursor-pointer"
               title="Search records"
             >
               <Search className="w-3.5 h-3.5" />
@@ -321,7 +373,7 @@ export const Header: React.FC<HeaderProps> = ({
           </form>
 
           {/* Filter Chips carousel / pills (PC and Mobile friendly) */}
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-0.5 w-full">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5 w-full">
             <div className="hidden sm:flex items-center gap-1 text-[11px] font-bold text-[#943217] uppercase shrink-0 mr-1">
               <Filter className="w-3 h-3" />
               <span>Filters:</span>
@@ -333,7 +385,7 @@ export const Header: React.FC<HeaderProps> = ({
                   key={f.id}
                   type="button"
                   onClick={() => handleFilterClick(f.id, f.targetTab)}
-                  className={`px-2.5 py-1 rounded text-[11px] font-semibold whitespace-nowrap transition-all shrink-0 ${
+                  className={`px-2.5 py-1 rounded text-[11px] font-semibold whitespace-nowrap transition-all shrink-0 cursor-pointer ${
                     isSelected
                       ? 'bg-[#943217] text-white shadow-xs font-bold'
                       : 'bg-white text-slate-700 hover:bg-[#e2d8c6] border border-[#d8cdb8]'
@@ -356,7 +408,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = currentTab === item.id;
+            const isActive = currentTab === item.id || (item.id === 'payment' && (currentTab === 'payment' || currentTab === 'fees'));
             return (
               <button
                 key={item.id}
@@ -365,7 +417,7 @@ export const Header: React.FC<HeaderProps> = ({
                   setCurrentTab(item.id);
                   setMobileMenuOpen(false);
                 }}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded text-xs font-semibold transition-colors ${
+                className={`w-full flex items-center justify-between px-3 py-2 rounded text-xs font-semibold transition-colors cursor-pointer ${
                   isActive ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-200 hover:bg-[#1b3d39]'
                 }`}
               >
@@ -381,6 +433,38 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             );
           })}
+
+          {/* Admin Desk inside Drawer */}
+          {isAdminLoggedIn ? (
+            <button
+              type="button"
+              onClick={() => {
+                setCurrentTab('admin');
+                setMobileMenuOpen(false);
+              }}
+              className="w-full flex items-center justify-between px-3 py-2 rounded text-xs font-bold bg-emerald-800 text-white hover:bg-emerald-700 transition-colors cursor-pointer mt-1"
+            >
+              <div className="flex items-center gap-2.5">
+                <ShieldCheck className="w-4 h-4 text-amber-300" />
+                <span>{lang === 'EN' ? 'Admin Dashboard' : 'प्रशासन डैशबोर्ड'}</span>
+              </div>
+              <span className="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded font-bold">
+                Logged In
+              </span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setIsAdminModalOpen(true);
+                setMobileMenuOpen(false);
+              }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded text-xs font-semibold text-slate-300 hover:text-amber-300 hover:bg-[#1b3d39] transition-colors cursor-pointer mt-1"
+            >
+              <Lock className="w-4 h-4 text-amber-400" />
+              <span>{lang === 'EN' ? 'Admin / Officer Login' : 'अधिकारी / एडमिन लॉगिन'}</span>
+            </button>
+          )}
 
           {/* Contact quick call in mobile drawer */}
           <div className="pt-2 mt-2 border-t border-[#1b3d39] text-[11px] text-slate-300 flex items-center justify-between">

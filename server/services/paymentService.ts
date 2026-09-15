@@ -23,6 +23,11 @@ export interface PaymentOrderResult {
   phone: string;
   keyId: string;
   hasRealGateway: boolean;
+  gatewayProvider: 'Razorpay';
+  apiEndpoint: string;
+  razorpayApiAttempted: boolean;
+  razorpayApiSuccess: boolean;
+  razorpayApiError?: string | null;
   status: string;
   createdAt: string;
 }
@@ -62,10 +67,17 @@ class PaymentService {
     }
     const payableAmount = Math.round(rawNum);
     let razorpayOrderId: string | null = null;
+    let razorpayApiAttempted = false;
+    let razorpayApiSuccess = false;
+    let razorpayApiError: string | null = null;
 
+    // Direct integration with Razorpay Orders API (https://api.razorpay.com/v1/orders)
     if (config.razorpay.isRealGateway) {
+      razorpayApiAttempted = true;
       try {
         const basicAuth = Buffer.from(`${config.razorpay.keyId}:${config.razorpay.keySecret}`).toString('base64');
+        console.log(`[RAZORPAY API] Initiating POST https://api.razorpay.com/v1/orders for ₹${payableAmount}...`);
+        
         const res = await fetch('https://api.razorpay.com/v1/orders', {
           method: 'POST',
           headers: {
@@ -73,13 +85,15 @@ class PaymentService {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            amount: Math.round(payableAmount * 100), // paise
-            currency: config.razorpay.currency,
+            amount: Math.round(payableAmount * 100), // amount in paise
+            currency: config.razorpay.currency || 'INR',
             receipt: 'BSE_' + Date.now().toString().slice(-8),
             notes: {
+              council: 'BSEDRC Bihar Board',
               serviceType: (serviceType || 'Board Examination Fee').slice(0, 40),
               candidateName: (candidateName || 'Candidate').slice(0, 40),
-              regNumber: (regNumber || '').slice(0, 40)
+              regNumber: (regNumber || '').slice(0, 40),
+              phone: (phone || '').slice(0, 20)
             }
           })
         });
@@ -87,11 +101,21 @@ class PaymentService {
         if (res.ok) {
           const rzpData = (await res.json()) as any;
           razorpayOrderId = rzpData.id;
+          razorpayApiSuccess = true;
+          console.log(`[RAZORPAY API] Order created successfully via Razorpay API: ${razorpayOrderId}`);
         } else {
-          console.warn('[RAZORPAY] Order creation gateway warning:', await res.text());
+          const errText = await res.text();
+          let parsedDesc = errText;
+          try {
+            const errObj = JSON.parse(errText);
+            parsedDesc = errObj?.error?.description || errObj?.message || errText;
+          } catch {}
+          razorpayApiError = `Razorpay API HTTP ${res.status}: ${parsedDesc}`;
+          console.warn('[RAZORPAY API Warning]', razorpayApiError);
         }
       } catch (err: any) {
-        console.warn('[RAZORPAY] Network error:', err.message);
+        razorpayApiError = `Network failure communicating with Razorpay API: ${err.message}`;
+        console.error('[RAZORPAY API Network Error]', err);
       }
     }
 
@@ -103,7 +127,7 @@ class PaymentService {
       razorpayOrderId,
       transactionId,
       amount: payableAmount,
-      currency: config.razorpay.currency,
+      currency: config.razorpay.currency || 'INR',
       serviceType: serviceType || 'Board Examination Fee',
       candidateName: candidateName || 'Council Candidate',
       regNumber: regNumber || '',
@@ -111,6 +135,11 @@ class PaymentService {
       phone: phone || config.board.helplinePhone,
       keyId: config.razorpay.keyId,
       hasRealGateway: !!razorpayOrderId,
+      gatewayProvider: 'Razorpay',
+      apiEndpoint: 'https://api.razorpay.com/v1/orders',
+      razorpayApiAttempted,
+      razorpayApiSuccess,
+      razorpayApiError,
       status: 'created',
       createdAt: new Date().toISOString()
     };
